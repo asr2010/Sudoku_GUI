@@ -40,6 +40,9 @@ def sudoku_solver(win):
             if(isEmpty(grid[i][j])):
                 for k in range(1,10):
                     if isValid((i,j),k):
+
+                        #TODO:user populated grid -- all the values
+                        #TODO:rendermethod -- i,j,val,color
                         grid[i][j] = k
                         value = myfont.render(str(k), True, (0,0,0))
                         win.blit(value, (((j+1)*50 +15,(i+1)*50)))
