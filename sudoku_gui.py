@@ -45,6 +45,7 @@ def main():
     win.fill(background_color)
     myfont = pygame.font.SysFont('Comic Sans MS', 35)
 
+    #TODO:replace with displayGrid()
     for i in range (0,10):
         if (i%3 == 0):
             pygame.draw.line(win, (0, 0, 0), (50 + 50 * i, 50), (50 + 50 * i, 500), 4)
@@ -56,6 +57,7 @@ def main():
     for i in range(0,len(grid[0])):
         for j in range(0,len(grid[0])):
             if(0<grid[i][j]<10):
+                #TODO:Replace with a method to display the numbers
                 value = myfont.render(str(grid[i][j]), True, original_grid_element_color)
                 win.blit(value, ((j+1)*50 +15, (i+1)*50))
     pygame.display.update()
