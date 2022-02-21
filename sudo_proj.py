@@ -1,17 +1,52 @@
-import sys
+'''
+The submission file implements Sudoku GUI using pygame and its solver in command prompt. The class SudoGenerator has the following methods that implements all the functionalities.
 
+Prerequisite: Install pygame and requests before running the program.
+
+Instructions to execute:
+1. To execute in developer mode: python sudo_prog.py -d.
+2. To execute in normal mode: python sudo_prog.py
+
+Developer Mode: This provides access to complete solution in the terminal and provides step by step assistance in solving the sudoku.
+
+Features and Options:
+1. Solve: Solves sudoku using backtrack algorithm.
+2. Reset: Sets board to the intial step of the problem
+3. Counter: Keeps track of occurences of every single digit on the grid
+
+Methods implemented:
+- grid_generator: Generate the default grid and annotations for GUI.
+- sudo_init: Initializes the initial numbers of the sudoku.
+- sudo_solver: Provides solution to the given sudoku using sudoku.
+- insert: Allows user to enter the values in blank space
+- solve: Solves the given sudoku and stores the solution.
+- find_empty: Check if the given grid contains any previous value or not.
+- valid: Check if the provided input is valid or not.
+- print_board: Print board in command prompt.
+- get_sudoku: Fetch sudoku from api using 'request'.
+- reset_board: Reset playing board to starting position.
+- update_stats: Keeps track of occurrences of each single digit in sudoku using Dictionary Comprehension.
+
+This application utilized user's input from both command line and GUI.
+
+
+'''
+
+# import packages
+import sys
 import pygame
 import requests
 
+# global Variables
 WIDTH = 550
 background_color = (251, 247, 245)
 original_grid_element_color = (52, 31, 151)
 buffer = 5
 
 
-# 2
+# class SudoGenerator
 class SudoGenerator:
-
+    # Generate the default grid and annotations for GUI.
     def grid_generator(self, window):
         for i in range(0, 10):
             if i % 3 == 0:
@@ -28,16 +63,21 @@ class SudoGenerator:
         window.blit(value, (215, 510))
         pygame.display.update()
 
-
+    # Initializes the initial numbers of the sudoku.
     def sudo_init(self, window):
         for i in range(0, len(grid_original[0])):
             for j in range(0, len(grid_original[0])):
-                pygame.draw.rect(window, background_color, ((j + 1) * 50 + buffer, (i + 1) * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer))
+                pygame.draw.rect(
+                    window,
+                    background_color,
+                    ((j + 1) * 50 + buffer, (i + 1) * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer)
+                )
                 if 0 < grid_original[i][j] < 10:
                     value = myfont.render(str(grid_original[i][j]), True, original_grid_element_color)
                     window.blit(value, ((j + 1) * 50 + 15, (i + 1) * 50))
         pygame.display.update()
 
+    # Provides solution to the given sudoku using sudoku.
     def sudo_solver(self, window):
         pygame.draw.rect(win, background_color, (10, 510, 540, 30))
         myfont3 = pygame.font.SysFont('Comic Sans MS', 20)
@@ -47,7 +87,11 @@ class SudoGenerator:
         for i in range(0, len(grid[0])):
             for j in range(0, len(grid[0])):
                 if 0 < grid_copy[i][j] < 10:
-                    pygame.draw.rect(window, background_color, ((j + 1) * 50 + buffer, (i + 1) * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer))
+                    pygame.draw.rect(
+                        window,
+                        background_color,
+                        ((j + 1) * 50 + buffer, (i + 1) * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer)
+                    )
                     if grid_original[i][j] != 0:
                         value = myfont.render(str(grid_copy[i][j]), True, original_grid_element_color)
                     elif grid_copy[i][j] == grid[i][j]:
@@ -60,6 +104,7 @@ class SudoGenerator:
 
         pygame.display.update()
 
+    # Allows user to enter the values in blank space.
     def insert(self, window, position):
         i, j = position[1], position[0]
         while True:
@@ -73,7 +118,11 @@ class SudoGenerator:
                     # 2. edit
                     if event.key == 48:  # checking with 0
                         grid[i - 1][j - 1] = event.key - 48
-                        pygame.draw.rect(window, background_color, (position[0] * 50 + buffer, position[1] * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer))
+                        pygame.draw.rect(
+                            window,
+                            background_color,
+                            (position[0] * 50 + buffer, position[1] * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer)
+                        )
                         pygame.display.update()
                     if 0 < event.key - 48 < 10:  # checking for valid input
                         pygame.draw.rect(window, background_color, (position[0] * 50 + buffer, position[1] * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer))
@@ -93,6 +142,7 @@ class SudoGenerator:
                         return
                     return
 
+    # Solves the given sudoku using the back-track algorithm and stores the solution
     def solve(self, bo):
 
         find = self.find_empty(bo)
@@ -111,6 +161,7 @@ class SudoGenerator:
                 bo[row][col] = 0
         return False
 
+    # Check if the given grid contains any previous value or not.
     def find_empty(self, bo):
         for i in range(len(bo)):
             for j in range(len(bo[0])):
@@ -118,6 +169,7 @@ class SudoGenerator:
                     return i, j  # row ,col
         return False
 
+    # Check if the provided input is valid or not.
     def valid(self, bo, num, pos):
         # check row
         for i in range(len(bo[0])):
@@ -138,6 +190,7 @@ class SudoGenerator:
                     return False
         return True
 
+    # Print board in command prompt.
     def print_board(self, bo):
 
         for i in range(len(bo)):
@@ -153,6 +206,7 @@ class SudoGenerator:
                 else:
                     print(str(bo[i][j]) + " ", end="")
 
+    # Fetch sudoku from api using 'request'.
     def get_sudoku(self, level):
         if level == 1:
             request_str = "https://sugoku.herokuapp.com/board?difficulty=easy"
@@ -160,6 +214,8 @@ class SudoGenerator:
             request_str = "https://sugoku.herokuapp.com/board?difficulty=medium"
         else:
             request_str = "https://sugoku.herokuapp.com/board?difficulty=hard"
+
+        # try-execute to handle failure of API endpoints
         try:
             res = requests.get(request_str)
             if res.text == '{"board":[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]]}\n':
@@ -169,6 +225,7 @@ class SudoGenerator:
 
         return res
 
+    # Reset playing board to starting position.
     def reset_board(self, win):
         sgen.sudo_init(win)
         global grid
@@ -177,7 +234,9 @@ class SudoGenerator:
         pygame.display.update()
         # print(grid)
 
+    # Update the counter keeping the track of occurrences of each single digit in sudoku.
     def update_stats(self, window):
+        # Generation of occurrence tracker using dictionary comprehension.
         d = {n: sum(x.count(n) for x in grid) for n in range(1, 10)}
         if dev:
             print(d)
@@ -222,6 +281,8 @@ if __name__ == '__main__':
         ]
     else:
         grid = response.json()['board']
+
+    # store original copy of the sudoku board for future comparisons
     grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
 
     # Generate Grid
