@@ -19,13 +19,20 @@ class SudoGenerator:
                 pygame.draw.line(window, (0, 0, 0), (50, 50 + 50 * i), (500, 50 + 50 * i), 4)
             pygame.draw.line(window, (0, 0, 0), (50 + 50 * i, 50), (50 + 50 * i, 500), 2)
             pygame.draw.line(window, (0, 0, 0), (50, 50 + 50 * i), (500, 50 + 50 * i), 2)
+        pygame.draw.rect(window, (0, 255, 0), (60, 510, 100, 30))
+        value = myfont.render('Solve', True, (0, 0, 0))
+        window.blit(value, (65,500))
+        pygame.draw.rect(window, (255, 0, 0), (190, 510, 100, 30))
+        value = myfont.render('Reset', True, (0, 0, 0))
+        window.blit(value, (195, 500))
         pygame.display.update()
 
     def sudo_init(self, window):
-        for i in range(0, len(grid[0])):
-            for j in range(0, len(grid[0])):
-                if 0 < grid[i][j] < 10:
-                    value = myfont.render(str(grid[i][j]), True, original_grid_element_color)
+        for i in range(0, len(grid_original[0])):
+            for j in range(0, len(grid_original[0])):
+                pygame.draw.rect(window, background_color, ((j + 1) * 50 + buffer, (i + 1) * 50 + buffer, 50 - 2 * buffer, 50 - 2 * buffer))
+                if 0 < grid_original[i][j] < 10:
+                    value = myfont.render(str(grid_original[i][j]), True, original_grid_element_color)
                     window.blit(value, ((j + 1) * 50 + 15, (i + 1) * 50))
         pygame.display.update()
 
@@ -40,7 +47,7 @@ class SudoGenerator:
                         value = myfont.render(str(grid_copy[i][j]), True, (0, 255, 0))
                     elif grid[i][j] == 0:
                         value = myfont.render(str(grid_copy[i][j]), True, (255, 165, 0))
-                    else:
+                    elif grid_copy[i][j] != grid[i][j]:
                         value = myfont.render(str(grid_copy[i][j]), True, (255, 0, 0))
                     window.blit(value, ((j + 1) * 50 + 15, (i + 1) * 50))
         pygame.display.update()
@@ -154,6 +161,24 @@ class SudoGenerator:
 
         return res
 
+    def reset_board(self, win):
+        sgen.sudo_init(win)
+        global grid
+        grid = [[grid_original[x][y] for y in range(len(grid_original[0]))] for x in range(len(grid_original))]
+        pygame.draw.rect(win, background_color, (10, 10, 540, 30))
+        pygame.display.update()
+        # print(grid)
+
+    def update_stats(self, window):
+        d = {n: sum(x.count(n) for x in grid) for n in range(1, 10)}
+        if dev:
+            print(d)
+        myfont2 = pygame.font.SysFont('Comic Sans MS', 20)
+        pygame.draw.rect(window, background_color,(120,10 ,420 ,30 ))
+        value = myfont2.render('Counter:   '+str(d), True, (0, 0, 0))
+        window.blit(value, (15, 10))
+        pygame.display.update()
+
 
 # 1. python module __main__
 if __name__ == '__main__':
@@ -167,7 +192,7 @@ if __name__ == '__main__':
         dev = False
 
     pygame.init()
-    win = pygame.display.set_mode((WIDTH, WIDTH))
+    win = pygame.display.set_mode((WIDTH , WIDTH))
     pygame.display.set_caption("Sudoku")
     win.fill(background_color)
     myfont = pygame.font.SysFont('Comic Sans MS', 35)
@@ -216,7 +241,14 @@ if __name__ == '__main__':
             if isSolved == 0:
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    sgen.insert(win, (pos[0]//50, pos[1]//50))
+                    if 60 <= pos[0] <= 160 and 510 <= pos[1] <= 540:
+                        sgen.sudo_solver(win)
+                        isSolved = 1
+                    elif 190 <= pos[0] <= 290 and 510 <= pos[1] <= 540:
+                        sgen.reset_board(win)
+                    else:
+                        sgen.insert(win, (pos[0]//50, pos[1]//50))
+                        sgen.update_stats(win)
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
                     sgen.sudo_solver(win)
                     isSolved = 1
