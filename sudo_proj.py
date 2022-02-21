@@ -20,12 +20,14 @@ class SudoGenerator:
             pygame.draw.line(window, (0, 0, 0), (50 + 50 * i, 50), (50 + 50 * i, 500), 2)
             pygame.draw.line(window, (0, 0, 0), (50, 50 + 50 * i), (500, 50 + 50 * i), 2)
         pygame.draw.rect(window, (0, 255, 0), (60, 510, 100, 30))
-        value = myfont.render('Solve', True, (0, 0, 0))
-        window.blit(value, (65,500))
+        myfont2 = pygame.font.SysFont('Comic Sans MS', 20)
+        value = myfont2.render('Solve', True, (0, 0, 0))
+        window.blit(value, (80,510))
         pygame.draw.rect(window, (255, 0, 0), (190, 510, 100, 30))
-        value = myfont.render('Reset', True, (0, 0, 0))
-        window.blit(value, (195, 500))
+        value = myfont2.render('Reset', True, (0, 0, 0))
+        window.blit(value, (215, 510))
         pygame.display.update()
+
 
     def sudo_init(self, window):
         for i in range(0, len(grid_original[0])):
@@ -37,6 +39,11 @@ class SudoGenerator:
         pygame.display.update()
 
     def sudo_solver(self, window):
+        pygame.draw.rect(win, background_color, (10, 510, 540, 30))
+        myfont3 = pygame.font.SysFont('Comic Sans MS', 20)
+        value = myfont3.render('Red: Invalid;    Green: Correct;    Orange: Expected', True, (0, 0, 0))
+        window.blit(value, (35, 510))
+
         for i in range(0, len(grid[0])):
             for j in range(0, len(grid[0])):
                 if 0 < grid_copy[i][j] < 10:
@@ -50,6 +57,7 @@ class SudoGenerator:
                     elif grid_copy[i][j] != grid[i][j]:
                         value = myfont.render(str(grid_copy[i][j]), True, (255, 0, 0))
                     window.blit(value, ((j + 1) * 50 + 15, (i + 1) * 50))
+
         pygame.display.update()
 
     def insert(self, window, position):
